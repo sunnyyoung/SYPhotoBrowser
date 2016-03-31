@@ -8,7 +8,7 @@ A simple and easy to use and lightweight photo browser, with nice performance.
 
 ##Requirments
 
-1. iOS7.0 and above.
+1. iOS 7.0 and above.
 
 ##Installation
 
@@ -20,8 +20,8 @@ To use `SYPhotoBrowser `
 ##Quickstart
 
 ```objc
-	SYPhotoBrowser *photoBrowser = [[SYPhotoBrowser alloc] initWithImageSourceArray:self.urlArray delegate:self];
-	[self presentViewController:imageVC animated:YES completion:nil];
+SYPhotoBrowser *photoBrowser = [[SYPhotoBrowser alloc] initWithImageSourceArray:self.urlArray delegate:self];
+[self presentViewController:imageVC animated:YES completion:nil];
 ```
 
 ##Credits
