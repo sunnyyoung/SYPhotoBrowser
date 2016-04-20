@@ -45,6 +45,7 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     SYPhotoBrowser *photoBrowser = [[SYPhotoBrowser alloc] initWithImageSourceArray:self.urlArray delegate:self];
     photoBrowser.initialPageIndex = indexPath.row;
+    photoBrowser.pageControlStyle = SYPhotoBrowserPageControlStyleLabel;
     [self presentViewController:photoBrowser animated:YES completion:nil];
 }
 

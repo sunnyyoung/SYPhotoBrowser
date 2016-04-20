@@ -9,11 +9,14 @@
 #import "SYPhotoBrowser.h"
 #import "SYPhotoViewController.h"
 
+static const CGFloat SYPhotoBrowserPageControlHeight = 40.0;
+
 @interface SYPhotoBrowser () <UIPageViewControllerDataSource, UIPageViewControllerDelegate>
 
 @property (nonatomic, weak) id <SYPhotoBrowserDelegate> photoBrowserDelegate;
 
-@property (nonatomic, strong) UIPageControl *pageControl;
+@property (nonatomic, strong) UIPageControl *systemPageControl;
+@property (nonatomic, strong) UILabel *labelPageControl;
 @property (nonatomic, strong) NSMutableArray *photoViewControllerArray;
 @property (nonatomic, strong) NSArray *imageSourceArray;
 
@@ -78,8 +81,7 @@
         [self.photoViewControllerArray addObject:photoViewController];
     }
     self.view.backgroundColor = [UIColor blackColor];
-    self.pageControl.numberOfPages = self.imageSourceArray.count;
-    self.pageControl.currentPage = self.initialPageIndex;
+    [self setupPageControl];
     [self setViewControllers:@[self.photoViewControllerArray[self.initialPageIndex]] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
 }
 
@@ -116,13 +118,13 @@
 #pragma mark - PageView Delegate
 
 - (void)pageViewController:(UIPageViewController *)pageViewController willTransitionToViewControllers:(NSArray<UIViewController *> *)pendingViewControllers {
-    self.pageControl.currentPage = ((SYPhotoViewController *)pendingViewControllers.lastObject).pageIndex;
+    [self updatePageControlWithPageIndex:((SYPhotoViewController *)pendingViewControllers.lastObject).pageIndex];
 }
 
 - (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray<UIViewController *> *)previousViewControllers transitionCompleted:(BOOL)completed {
     [((SYPhotoViewController *)previousViewControllers.lastObject) resetImageSize];
     if (!completed) {
-        self.pageControl.currentPage = ((SYPhotoViewController *)previousViewControllers.lastObject).pageIndex;
+        [self updatePageControlWithPageIndex:((SYPhotoViewController *)previousViewControllers.lastObject).pageIndex];
     }
 }
 
@@ -135,6 +137,25 @@
 - (void)handleLongPressNotification:(NSNotification *)notification {
     if ([self.photoBrowserDelegate respondsToSelector:@selector(photoBrowser:didLongPressImage:)]) {
         [self.photoBrowserDelegate photoBrowser:self didLongPressImage:notification.object];
+    }
+}
+
+#pragma mark - Private method
+
+- (void)setupPageControl {
+    if (self.pageControlStyle == SYPhotoBrowserPageControlStyleSystem) {
+        self.systemPageControl.numberOfPages = self.imageSourceArray.count;
+        self.systemPageControl.currentPage = self.initialPageIndex;
+    } else {
+        self.labelPageControl.text = [NSString stringWithFormat:@"%@/%@", @(self.initialPageIndex+1), @(self.imageSourceArray.count)];
+    }
+}
+
+- (void)updatePageControlWithPageIndex:(NSUInteger)pageIndex {
+    if (self.pageControlStyle == SYPhotoBrowserPageControlStyleSystem) {
+        self.systemPageControl.currentPage = pageIndex;
+    } else {
+        self.labelPageControl.text = [NSString stringWithFormat:@"%@/%@", @(pageIndex+1), @(self.imageSourceArray.count)];
     }
 }
 
@@ -155,14 +176,25 @@
     return _photoViewControllerArray;
 }
 
-- (UIPageControl *)pageControl {
-    if (_pageControl == nil) {
-        _pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.view.bounds)-40.0, CGRectGetWidth(self.view.bounds), 40.0)];
-        _pageControl.userInteractionEnabled = NO;
-        _pageControl.hidesForSinglePage = YES;
-        [self.view addSubview:_pageControl];
+- (UIPageControl *)systemPageControl {
+    if (_systemPageControl == nil) {
+        _systemPageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.view.bounds)-SYPhotoBrowserPageControlHeight, CGRectGetWidth(self.view.bounds), SYPhotoBrowserPageControlHeight)];
+        _systemPageControl.userInteractionEnabled = NO;
+        _systemPageControl.hidesForSinglePage = YES;
+        [self.view addSubview:_systemPageControl];
     }
-    return _pageControl;
+    return _systemPageControl;
+}
+
+- (UILabel *)labelPageControl {
+    if (_labelPageControl == nil) {
+        _labelPageControl = [[UILabel alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.view.bounds)-SYPhotoBrowserPageControlHeight, CGRectGetWidth(self.view.bounds), SYPhotoBrowserPageControlHeight)];
+        _labelPageControl.textAlignment = NSTextAlignmentCenter;
+        _labelPageControl.textColor = [UIColor whiteColor];
+        _labelPageControl.font = [UIFont systemFontOfSize:14.0];
+        [self.view addSubview:_labelPageControl];
+    }
+    return _labelPageControl;
 }
 
 @end

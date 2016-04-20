@@ -8,10 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
-static NSString * const SYPhotoBrowserDismissNotification = @"SYPhotoBrowserDismissNotification";
+static NSString * const SYPhotoBrowserDismissNotification   = @"SYPhotoBrowserDismissNotification";
 static NSString * const SYPhotoBrowserLongPressNotification = @"SYPhotoBrowserLongPressNotification";
 
 @class SYPhotoBrowser;
+
+typedef NS_ENUM(NSUInteger, SYPhotoBrowserPageControlStyle) {
+    SYPhotoBrowserPageControlStyleSystem = 0,
+    SYPhotoBrowserPageControlStyleLabel
+};
 
 @protocol SYPhotoBrowserDelegate <NSObject>
 
@@ -28,5 +33,6 @@ static NSString * const SYPhotoBrowserLongPressNotification = @"SYPhotoBrowserLo
 - (instancetype)initWithImageSourceArray:(NSArray *)imageSourceArray delegate:(id)delegate;
 
 @property (nonatomic, assign) NSUInteger initialPageIndex;
+@property (nonatomic, assign) SYPhotoBrowserPageControlStyle pageControlStyle;
 
 @end
