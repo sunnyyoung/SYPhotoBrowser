@@ -31,6 +31,7 @@ static const CGFloat SYPhotoBrowserPageControlHeight = 40.0;
                     navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal
                                   options:@{UIPageViewControllerOptionInterPageSpacingKey: @(10)}];
     if (self) {
+        self.statusBarHidden = YES;
         self.dataSource = self;
         self.delegate = self;
         self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
@@ -162,7 +163,7 @@ static const CGFloat SYPhotoBrowserPageControlHeight = 40.0;
 #pragma mark - Property method
 
 - (BOOL)prefersStatusBarHidden {
-    return YES;
+    return self.statusBarHidden;
 }
 
 - (UIStatusBarAnimation)preferredStatusBarUpdateAnimation {

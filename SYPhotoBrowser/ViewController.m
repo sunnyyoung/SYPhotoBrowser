@@ -46,6 +46,7 @@
     SYPhotoBrowser *photoBrowser = [[SYPhotoBrowser alloc] initWithImageSourceArray:self.urlArray delegate:self];
     photoBrowser.initialPageIndex = indexPath.row;
     photoBrowser.pageControlStyle = SYPhotoBrowserPageControlStyleLabel;
+    photoBrowser.statusBarHidden = NO;
     [self presentViewController:photoBrowser animated:YES completion:nil];
 }
 
