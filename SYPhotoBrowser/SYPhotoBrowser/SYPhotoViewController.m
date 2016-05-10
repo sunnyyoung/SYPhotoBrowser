@@ -158,7 +158,7 @@
             });
         } else {
             self.parentViewController.view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:1.0];
-            [self.scrollView setZoomScale:self.scrollView.minimumZoomScale animated:YES];
+            [self resetImageSize];
             UISnapBehavior *snapBack = [[UISnapBehavior alloc] initWithItem:self.imageView snapToPoint:self.scrollView.center];
             [self.dynamicAnimator addBehavior:snapBack];
         }
@@ -171,7 +171,6 @@
     UIImageView *imageView = [[UIImageView alloc] initWithImage:self.loadedImage];
     imageView.frame = self.view.bounds;
     imageView.clipsToBounds = YES;
-    imageView.contentMode = UIViewContentModeScaleAspectFill;
     imageView.backgroundColor = [UIColor blackColor];
     
     //Scale to keep its aspect ration
@@ -230,28 +229,10 @@
     }
     self.imageView = [self createImageView];
     [self.scrollView addSubview:self.imageView];
-    // Sizes
-    CGSize boundsSize = self.scrollView.bounds.size;
-    CGSize imageSize = self.imageView.frame.size;
-    
-    // Calculate Min
-    CGFloat xScale = boundsSize.width / imageSize.width;
-    CGFloat yScale = boundsSize.height / imageSize.height;
-    CGFloat minScale = MIN(xScale, yScale);
-    
-    // Calculate Max
-    CGFloat maxScale = 6.0;
-    if ([UIScreen instancesRespondToSelector:@selector(scale)]) {
-        maxScale = maxScale / [[UIScreen mainScreen] scale];
-        if (maxScale < minScale) {
-            maxScale = minScale * 2;
-        }
-    }
-    
     //Apply zoom
-    self.scrollView.maximumZoomScale = maxScale;
-    self.scrollView.minimumZoomScale = minScale;
-    self.scrollView.zoomScale = minScale;
+    self.scrollView.maximumZoomScale = self.imageMaxScale;
+    self.scrollView.minimumZoomScale = self.imageMinScale;
+    self.scrollView.zoomScale = self.imageMinScale;
 }
 
 - (void)dismiss {
@@ -324,6 +305,29 @@
         _dynamicAnimator = [[UIDynamicAnimator alloc] initWithReferenceView:self.scrollView];
     }
     return _dynamicAnimator;
+}
+
+- (CGFloat)imageMinScale {
+    CGSize boundsSize = self.scrollView.bounds.size;
+    CGSize imageSize = self.imageView.frame.size;
+    
+    // Calculate Min
+    CGFloat xScale = boundsSize.width / imageSize.width;
+    CGFloat yScale = boundsSize.height / imageSize.height;
+    CGFloat minScale = MIN(xScale, yScale);
+    return minScale;
+}
+
+- (CGFloat)imageMaxScale {
+    // Calculate Max
+    CGFloat maxScale = 6.0;
+    if ([UIScreen instancesRespondToSelector:@selector(scale)]) {
+        maxScale = maxScale / [[UIScreen mainScreen] scale];
+        if (maxScale < self.imageMinScale) {
+            maxScale = self.imageMinScale * 2;
+        }
+    }
+    return maxScale;
 }
 
 @end

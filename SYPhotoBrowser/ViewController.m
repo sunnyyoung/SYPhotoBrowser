@@ -23,7 +23,8 @@
     self.urlArray = @[@"http://iphone.tgbus.com/UploadFiles/201410/20141020134730646.jpg",
                       @"http://a.hiphotos.baidu.com/zhidao/pic/item/2cf5e0fe9925bc314cc6bd685fdf8db1ca1370a2.jpg",
                       @"http://d.3987.com/cgqfj_130528/001.jpg",
-                      @"http://news.mydrivers.com/img/20130518/68d97fe443034db3bc3aef4d98ac9188.jpg"];
+                      @"http://news.mydrivers.com/img/20130518/68d97fe443034db3bc3aef4d98ac9188.jpg",
+                      @"http://ww4.sinaimg.cn/large/af8c19d2gw1f3hzhbs4kfj20j64e5kej.jpg"];
 }
 
 #pragma mark - CollectionView
