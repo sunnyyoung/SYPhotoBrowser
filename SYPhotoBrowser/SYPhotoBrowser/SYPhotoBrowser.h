@@ -27,13 +27,13 @@ typedef NS_ENUM(NSUInteger, SYPhotoBrowserPageControlStyle) {
 
 @interface SYPhotoBrowser : UIPageViewController
 
-- (instancetype)initWithImageSource:(id)imageSource;
-- (instancetype)initWithImageSource:(id)imageSource delegate:(id)delegate;
-- (instancetype)initWithImageSourceArray:(NSArray *)imageSourceArray;
-- (instancetype)initWithImageSourceArray:(NSArray *)imageSourceArray delegate:(id)delegate;
+- (instancetype)initWithImageSource:(id)imageSource caption:(NSString *)caption;
+- (instancetype)initWithImageSource:(id)imageSource caption:(NSString *)caption delegate:(id)delegate;
+- (instancetype)initWithImageSourceArray:(NSArray *)imageSourceArray caption:(NSString *)caption;
+- (instancetype)initWithImageSourceArray:(NSArray *)imageSourceArray caption:(NSString *)caption delegate:(id)delegate;
 
 @property (nonatomic, assign) NSUInteger initialPageIndex;
 @property (nonatomic, assign) SYPhotoBrowserPageControlStyle pageControlStyle;
-@property (nonatomic, assign) BOOL statusBarHidden;
+@property (nonatomic, assign) BOOL enableStatusBarHidden;
 
 @end

@@ -44,10 +44,10 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    SYPhotoBrowser *photoBrowser = [[SYPhotoBrowser alloc] initWithImageSourceArray:self.urlArray delegate:self];
+    SYPhotoBrowser *photoBrowser = [[SYPhotoBrowser alloc] initWithImageSourceArray:self.urlArray caption:@"This is caption label" delegate:self];
     photoBrowser.initialPageIndex = indexPath.row;
     photoBrowser.pageControlStyle = SYPhotoBrowserPageControlStyleLabel;
-    photoBrowser.statusBarHidden = NO;
+    photoBrowser.enableStatusBarHidden = YES;
     [self presentViewController:photoBrowser animated:YES completion:nil];
 }
 

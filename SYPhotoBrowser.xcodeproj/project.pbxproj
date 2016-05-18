@@ -16,6 +16,7 @@
 		7D788C3F1CABA430002E94B0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7D788C3D1CABA430002E94B0 /* LaunchScreen.storyboard */; };
 		7D788C4A1CABA7F1002E94B0 /* SYPhotoBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D788C491CABA7F1002E94B0 /* SYPhotoBrowser.m */; };
 		7D788C4D1CABA841002E94B0 /* SYPhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D788C4C1CABA841002E94B0 /* SYPhotoViewController.m */; };
+		7DC653921CED501B00557DDD /* SYPhotoBrowserCaptionLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DC653911CED501B00557DDD /* SYPhotoBrowserCaptionLabel.m */; };
 		96355013C490F232941FFEC9 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7985BDDB4D70E7F10E5624D9 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -38,6 +39,8 @@
 		7D788C491CABA7F1002E94B0 /* SYPhotoBrowser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SYPhotoBrowser.m; sourceTree = "<group>"; };
 		7D788C4B1CABA841002E94B0 /* SYPhotoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SYPhotoViewController.h; sourceTree = "<group>"; };
 		7D788C4C1CABA841002E94B0 /* SYPhotoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SYPhotoViewController.m; sourceTree = "<group>"; };
+		7DC653901CED501B00557DDD /* SYPhotoBrowserCaptionLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SYPhotoBrowserCaptionLabel.h; sourceTree = "<group>"; };
+		7DC653911CED501B00557DDD /* SYPhotoBrowserCaptionLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SYPhotoBrowserCaptionLabel.m; sourceTree = "<group>"; };
 		8DA6A6D76E8C058FE3FF82B0 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -113,6 +116,8 @@
 				7D788C491CABA7F1002E94B0 /* SYPhotoBrowser.m */,
 				7D788C4B1CABA841002E94B0 /* SYPhotoViewController.h */,
 				7D788C4C1CABA841002E94B0 /* SYPhotoViewController.m */,
+				7DC653901CED501B00557DDD /* SYPhotoBrowserCaptionLabel.h */,
+				7DC653911CED501B00557DDD /* SYPhotoBrowserCaptionLabel.m */,
 			);
 			path = SYPhotoBrowser;
 			sourceTree = "<group>";
@@ -251,6 +256,7 @@
 				7D788C371CABA430002E94B0 /* ViewController.m in Sources */,
 				7D788C4D1CABA841002E94B0 /* SYPhotoViewController.m in Sources */,
 				7D788C4A1CABA7F1002E94B0 /* SYPhotoBrowser.m in Sources */,
+				7DC653921CED501B00557DDD /* SYPhotoBrowserCaptionLabel.m in Sources */,
 				7D788C341CABA430002E94B0 /* AppDelegate.m in Sources */,
 				7D788C311CABA430002E94B0 /* main.m in Sources */,
 			);
