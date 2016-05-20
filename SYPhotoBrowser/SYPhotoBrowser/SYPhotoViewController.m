@@ -57,6 +57,7 @@
 }
 
 - (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
     //Scrollview
     [self.scrollView setFrame:self.view.bounds];
     
@@ -76,6 +77,16 @@
     //Reposition image view
     CGRect newRect = CGRectMake(leftOffset, topOffset, newWidth, newHeight);
     self.imageView.frame = newRect;
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    [self resetImageSize];
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [self.dynamicAnimator removeAllBehaviors];
 }
 
 #pragma mark - ScrollView Delegate
@@ -167,16 +178,16 @@
     } else if (panGestureRecognizer.state == UIGestureRecognizerStateEnded) {
         [self.dynamicAnimator removeBehavior:self.attachmentBehavior];
         // need to scale velocity values to tame down physics on the iPad
-        CGFloat deviceVelocityScale = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 0.2f : 1.0f;
-        CGFloat deviceAngularScale = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 0.7f : 1.0f;
+        CGFloat deviceVelocityScale = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 0.2 : 1.0;
+        CGFloat deviceAngularScale = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 0.7 : 1.0;
         // factor to increase delay before `dismissAfterPush` is called on iPad to account for more area to cover to disappear
-        CGFloat deviceDismissDelay = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 1.8f : 1.0f;
+        CGFloat deviceDismissDelay = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 1.8 : 1.0;
         CGPoint velocity = [panGestureRecognizer velocityInView:self.view];
-        CGFloat velocityAdjust = 10.0f * deviceVelocityScale;
-        if (fabs(velocity.x / velocityAdjust) > 50.0 || fabs(velocity.y / velocityAdjust) > 50.0) {
+        CGFloat velocityAdjust = 10.0 * deviceVelocityScale;
+        if (fabs(velocity.x / velocityAdjust) > 100.0 || fabs(velocity.y / velocityAdjust) > 100.0) {
             UIOffset offsetFromCenter = UIOffsetMake(imageLocation.x - CGRectGetMidX(self.imageView.bounds), imageLocation.y - CGRectGetMidY(self.imageView.bounds));
-            CGFloat radius = sqrtf(powf(offsetFromCenter.horizontal, 2.0f) + powf(offsetFromCenter.vertical, 2.0f));
-            CGFloat pushVelocity = sqrtf(powf(velocity.x, 2.0f) + powf(velocity.y, 2.0f));
+            CGFloat radius = sqrtf(powf(offsetFromCenter.horizontal, 2.0) + powf(offsetFromCenter.vertical, 2.0));
+            CGFloat pushVelocity = sqrtf(powf(velocity.x, 2.0) + powf(velocity.y, 2.0));
             
             // calculate angles needed for angular velocity formula
             CGFloat velocityAngle = atan2f(velocity.y, velocity.x);
@@ -192,29 +203,31 @@
             
             // rotation direction is dependent upon which corner was pushed relative to the center of the view
             // when velocity.y is positive, pushes to the right of center rotate clockwise, left is counterclockwise
-            CGFloat direction = (location.x < panGestureRecognizer.view.center.x) ? -1.0f : 1.0f;
+            CGFloat direction = (location.x < panGestureRecognizer.view.center.x) ? -1.0 : 1.0;
             // when y component of velocity is negative, reverse direction
-            if (velocity.y < 0) { direction *= -1; }
+            if (velocity.y < 0) {
+                direction *= -1;
+            }
             
             // amount of angular velocity should be relative to how close to the edge of the view the force originated
             // angular velocity is reduced the closer to the center the force is applied
             // for angular velocity: positive = clockwise, negative = counterclockwise
-            CGFloat xRatioFromCenter = fabs(offsetFromCenter.horizontal) / (CGRectGetWidth(self.imageView.frame) / 2.0f);
-            CGFloat yRatioFromCetner = fabs(offsetFromCenter.vertical) / (CGRectGetHeight(self.imageView.frame) / 2.0f);
+            CGFloat xRatioFromCenter = fabs(offsetFromCenter.horizontal) / (CGRectGetWidth(self.imageView.frame) / 2.0);
+            CGFloat yRatioFromCetner = fabs(offsetFromCenter.vertical) / (CGRectGetHeight(self.imageView.frame) / 2.0);
             
             // apply device scale to angular velocity
             angularVelocity *= deviceAngularScale;
             // adjust angular velocity based on distance from center, force applied farther towards the edges gets more spin
-            angularVelocity *= ((xRatioFromCenter + yRatioFromCetner) / 2.0f);
+            angularVelocity *= ((xRatioFromCenter + yRatioFromCetner) / 2.0);
             
-            self.pushBehavior.pushDirection = CGVectorMake((velocity.x / velocityAdjust) * 1.0, (velocity.y / velocityAdjust) * 1.0);
+            self.pushBehavior.pushDirection = CGVectorMake((velocity.x / velocityAdjust), (velocity.y / velocityAdjust));
             self.pushBehavior.active = YES;
-            [self.dynamicItemBehavior addAngularVelocity:angularVelocity * 1.0 * direction forItem:self.imageView];
+            [self.dynamicItemBehavior addAngularVelocity:angularVelocity * direction forItem:self.imageView];
             [self.dynamicAnimator addBehavior:self.pushBehavior];
             
             // delay for dismissing is based on push velocity also
             CGFloat delay = 0.5 - (pushVelocity / 10000.0f);
-            [self performSelector:@selector(dismiss) withObject:nil afterDelay:(delay * deviceDismissDelay) * 1.0];
+            [self performSelector:@selector(dismiss) withObject:nil afterDelay:(delay * deviceDismissDelay)];
         } else {
             [self.dynamicAnimator removeAllBehaviors];
             [self resetImageSize];
@@ -366,9 +379,9 @@
         _dynamicItemBehavior = [[UIDynamicItemBehavior alloc] initWithItems:@[self.imageView]];
         _dynamicItemBehavior.elasticity = 0.0;
         _dynamicItemBehavior.friction = 0.2;
-        _dynamicItemBehavior.allowsRotation = YES;
         _dynamicItemBehavior.density = 1.0;
         _dynamicItemBehavior.resistance = 0.0;
+        _dynamicItemBehavior.allowsRotation = YES;
     }
     return _dynamicItemBehavior;
 }

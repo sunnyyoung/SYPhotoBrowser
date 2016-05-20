@@ -80,9 +80,13 @@ static const CGFloat SYPhotoBrowserCaptionLabelPadding = 20.0;
     return self;
 }
 
+- (void)loadView {
+    [super loadView];
+    self.view.backgroundColor = [UIColor blackColor];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor blackColor];
     [self loadPhotoViewControllers];
     [self updatePageControlWithPageIndex:self.initialPageIndex];
     [self updateCationLabelWithCaption:self.caption];
@@ -214,7 +218,7 @@ static const CGFloat SYPhotoBrowserCaptionLabelPadding = 20.0;
 - (UILabel *)labelPageControl {
     if (_labelPageControl == nil) {
         _labelPageControl = [[UILabel alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.view.bounds)-SYPhotoBrowserPageControlHeight, CGRectGetWidth(self.view.bounds), SYPhotoBrowserPageControlHeight)];
-        _labelPageControl.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        _labelPageControl.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleTopMargin;
         _labelPageControl.textAlignment = NSTextAlignmentCenter;
         _labelPageControl.textColor = [UIColor whiteColor];
         _labelPageControl.font = [UIFont systemFontOfSize:14.0];
@@ -228,7 +232,7 @@ static const CGFloat SYPhotoBrowserCaptionLabelPadding = 20.0;
         CGRect frame = CGRectMake(0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds), 0.0);
         UIEdgeInsets edgeInsets = UIEdgeInsetsMake(SYPhotoBrowserCaptionLabelPadding, SYPhotoBrowserCaptionLabelPadding, SYPhotoBrowserCaptionLabelPadding, SYPhotoBrowserCaptionLabelPadding);
         _captionLabel = [[SYPhotoBrowserCaptionLabel alloc] initWithFrame:frame edgeInsets:edgeInsets];
-        _captionLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleBottomMargin;
+        _captionLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleTopMargin;
         _captionLabel.numberOfLines = 0;
         _captionLabel.textColor = [UIColor whiteColor];
         _captionLabel.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.6];
