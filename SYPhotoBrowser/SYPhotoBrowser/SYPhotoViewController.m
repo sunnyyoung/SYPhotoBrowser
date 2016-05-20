@@ -97,13 +97,7 @@
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView {
     if (!scrollView.zooming) {
-        if (scrollView.zoomScale <= 1.0) {
-            scrollView.scrollEnabled = NO;
-            self.enablePanGesture = YES;
-        } else {
-            scrollView.scrollEnabled = YES;
-            self.enablePanGesture = NO;
-        }
+        self.enablePanGesture = scrollView.zoomScale <= 1.0;
     }
     // Reset ImageView Center
     CGSize contentSize = self.scrollView.contentSize;

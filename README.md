@@ -1,6 +1,6 @@
 #SYPhotoBrowser
 
-A simple and easy to use and lightweight photo browser, with nice performance.
+A cute and lightweight photo browser like Tweetbot3.
 
 ##Screen Shot
 
@@ -10,25 +10,27 @@ A simple and easy to use and lightweight photo browser, with nice performance.
 
 1. iOS 7.0 and above.
 
+##Dependency
+
+- [SDWebImage](https://github.com/rs/SDWebImage)
+- [DACircularProgress](https://github.com/danielamitay/DACircularProgress)
+
 ##Installation
 
 To use `SYPhotoBrowser `
 
 1. Edit your `Podfile`, add one line code `pod 'SYPhotoBrowser`
-2. `#import <SYPhotoBrowser/SYPhotoBrowser.h>`
+2. Run 'pod update'
+3. `#import <SYPhotoBrowser/SYPhotoBrowser.h>`
 
 ##Quickstart
 
 ```objc
-SYPhotoBrowser *photoBrowser = [[SYPhotoBrowser alloc] initWithImageSourceArray:urlArray delegate:self];
+SYPhotoBrowser *photoBrowser = [[SYPhotoBrowser alloc] initWithImageSourceArray:self.urlArray caption:@"This is caption label" delegate:self];
+photoBrowser.initialPageIndex = indexPath.row;
+photoBrowser.pageControlStyle = SYPhotoBrowserPageControlStyleLabel;
 [self presentViewController:photoBrowser animated:YES completion:nil];
 ```
-
-##Credits
-
-- [SDWebImage](https://github.com/rs/SDWebImage)
-- [DACircularProgress](https://github.com/danielamitay/DACircularProgress)
-- [buffer-ios-image-viewer](https://github.com/bufferapp/buffer-ios-image-viewer)
 
 ##License
 The [MIT License](LICENSE).
