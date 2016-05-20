@@ -125,8 +125,9 @@ static const CGFloat SYPhotoBrowserCaptionLabelPadding = 20.0;
 }
 
 - (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray<UIViewController *> *)previousViewControllers transitionCompleted:(BOOL)completed {
-    [((SYPhotoViewController *)previousViewControllers.lastObject) resetImageSize];
-    if (!completed) {
+    if (completed) {
+        [((SYPhotoViewController *)previousViewControllers.lastObject) resetImageSize];
+    } else {
         [self updatePageControlWithPageIndex:((SYPhotoViewController *)previousViewControllers.lastObject).pageIndex];
     }
 }

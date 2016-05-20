@@ -15,8 +15,18 @@
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) UIImage *loadedImage;
 @property (nonatomic, strong) DACircularProgressView *progressView;
+
+@property (nonatomic, strong) UISnapBehavior *snapBehavior;
+@property (nonatomic, strong) UIPushBehavior *pushBehavior;
 @property (nonatomic, strong) UIDynamicAnimator *dynamicAnimator;
+@property (nonatomic, strong) UIDynamicItemBehavior *dynamicItemBehavior;
 @property (nonatomic, strong) UIAttachmentBehavior *attachmentBehavior;
+@property (nonatomic, strong) UIPanGestureRecognizer *panGestureRecognizer;
+@property (nonatomic, strong) UITapGestureRecognizer *singleTapGestureRecognizer;
+@property (nonatomic, strong) UITapGestureRecognizer *doubleTapGestureRecognizer;
+@property (nonatomic, strong) UILongPressGestureRecognizer *longPressGestureRecognizer;
+
+@property (nonatomic, assign) BOOL enablePanGesture;
 
 @end
 
@@ -75,44 +85,61 @@
 }
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView {
-    [self.dynamicAnimator removeAllBehaviors];
-    CGSize boundsSize = self.scrollView.bounds.size;
-    CGRect contentsFrame = self.imageView.frame;
-    if (contentsFrame.size.width < boundsSize.width) {
-        contentsFrame.origin.x = (boundsSize.width - contentsFrame.size.width) / 2.0f;
-    } else {
-        contentsFrame.origin.x = 0.0f;
+    if (!scrollView.zooming) {
+        if (scrollView.zoomScale <= 1.0) {
+            scrollView.scrollEnabled = NO;
+            self.enablePanGesture = YES;
+        } else {
+            scrollView.scrollEnabled = YES;
+            self.enablePanGesture = NO;
+        }
     }
-    
-    if (contentsFrame.size.height < boundsSize.height) {
-        contentsFrame.origin.y = (boundsSize.height - contentsFrame.size.height) / 2.0f;
-    } else {
-        contentsFrame.origin.y = 0.0f;
-    }
-    self.imageView.frame = contentsFrame;
+    // Reset ImageView Center
+    CGSize contentSize = self.scrollView.contentSize;
+    CGFloat offsetX = (CGRectGetWidth(self.scrollView.frame) > contentSize.width) ? (CGRectGetWidth(self.scrollView.frame) - contentSize.width) / 2.0f : 0.0f;
+    CGFloat offsetY = (CGRectGetHeight(self.scrollView.frame) > contentSize.height) ? (CGRectGetHeight(self.scrollView.frame) - contentSize.height) / 2.0f : 0.0f;
+    self.imageView.center = CGPointMake(self.scrollView.contentSize.width / 2.0f + offsetX, self.scrollView.contentSize.height / 2.0f + offsetY);
 }
 
 #pragma mark - GestureRecognizer Delegate
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
-    CGPoint velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.scrollView];
-    return fabs(velocity.y) > fabs(velocity.x);
+    if (self.scrollView.zoomScale != self.scrollView.minimumZoomScale) {
+        return NO;
+    } else {
+        CGPoint velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.scrollView];
+        return fabs(velocity.y) > fabs(velocity.x);
+    }
 }
 
-#pragma mark - Event Response
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    CGFloat transformScale = self.imageView.transform.a;
+    BOOL shouldRecognize = transformScale > self.scrollView.minimumZoomScale;
+    BOOL isTapGesture = [gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]] && [otherGestureRecognizer isKindOfClass:[UITapGestureRecognizer class]];
+    // make sure tap and double tap gestures aren't recognized simultaneously
+    return shouldRecognize && !isTapGesture;
+}
 
 - (void)handleSingleTapGestureRecognizer:(UITapGestureRecognizer *)singleTapGestureRecognizer {
     [self dismiss];
 }
 
 - (void)handleDoubleTapGestureRecognizer:(UITapGestureRecognizer *)doubleTapGestureRecognizer {
-    if (self.scrollView.zoomScale == self.scrollView.maximumZoomScale) {
-        //Zoom out since we zoomed in here
+    if (self.scrollView.zoomScale != self.scrollView.minimumZoomScale) {
         [self.scrollView setZoomScale:self.scrollView.minimumZoomScale animated:YES];
-    } else {
-        //Zoom to a point
-        CGPoint touchPoint = [doubleTapGestureRecognizer locationInView:self.scrollView];
-        [self.scrollView zoomToRect:CGRectMake(touchPoint.x, touchPoint.y, 1, 1) animated:YES];
+    }
+    else {
+        CGPoint tapPoint = [self.imageView convertPoint:[doubleTapGestureRecognizer locationInView:doubleTapGestureRecognizer.view] fromView:self.scrollView];
+        CGFloat newZoomScale = self.scrollView.maximumZoomScale;
+        
+        CGFloat w = CGRectGetWidth(self.imageView.frame) / newZoomScale;
+        CGFloat h = CGRectGetHeight(self.imageView.frame) / newZoomScale;
+        
+        if (w != CGRectGetWidth(self.imageView.frame)) {
+            self.enablePanGesture = NO;
+            CGRect zoomRect = CGRectMake(tapPoint.x - (w / 2.0f), tapPoint.y - (h / 2.0f), w, h);
+            [self.scrollView zoomToRect:zoomRect animated:YES];
+        }
     }
 }
 
@@ -123,54 +150,108 @@
 }
 
 - (void)handlePanGestureRecognizer:(UIPanGestureRecognizer *)panGestureRecognizer {
+    CGPoint location = [panGestureRecognizer locationInView:self.view];
+    CGPoint imageLocation = [panGestureRecognizer locationInView:self.imageView];
     if (panGestureRecognizer.state == UIGestureRecognizerStateBegan) {
         [self.dynamicAnimator removeAllBehaviors];
-        
-        CGPoint location = [panGestureRecognizer locationInView:self.scrollView];
-        CGPoint imgLocation = [panGestureRecognizer locationInView:self.imageView];
-        
-        UIOffset centerOffset = UIOffsetMake(imgLocation.x - CGRectGetMidX(self.imageView.bounds),
-                                             imgLocation.y - CGRectGetMidY(self.imageView.bounds));
+        UIOffset centerOffset = UIOffsetMake(imageLocation.x - CGRectGetMidX(self.imageView.bounds), imageLocation.y - CGRectGetMidY(self.imageView.bounds));
         self.attachmentBehavior = [[UIAttachmentBehavior alloc] initWithItem:self.imageView offsetFromCenter:centerOffset attachedToAnchor:location];
         [self.dynamicAnimator addBehavior:self.attachmentBehavior];
+        [self.dynamicAnimator addBehavior:self.dynamicItemBehavior];
+        CGRect imageFrame = self.imageView.frame;
+        imageFrame.size.width *= self.scrollView.zoomScale;
+        imageFrame.size.height *= self.scrollView.zoomScale;
+        self.imageView.frame = imageFrame;
     } else if (panGestureRecognizer.state == UIGestureRecognizerStateChanged) {
-        [self.attachmentBehavior setAnchorPoint:[panGestureRecognizer locationInView:self.scrollView]];
-        self.parentViewController.view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.6];
+        self.attachmentBehavior.anchorPoint = location;
     } else if (panGestureRecognizer.state == UIGestureRecognizerStateEnded) {
-        CGPoint location = [panGestureRecognizer locationInView:self.scrollView];
-        CGRect closeTopThreshhold = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds) * .25);
-        CGRect closeBottomThreshhold = CGRectMake(0, CGRectGetHeight(self.view.bounds) - closeTopThreshhold.size.height, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds) * .25);
-        //Check if we should close - or just snap back to the center
-        if (CGRectContainsPoint(closeTopThreshhold, location) || CGRectContainsPoint(closeBottomThreshhold, location)) {
-            [self.dynamicAnimator removeAllBehaviors];
-            self.imageView.userInteractionEnabled = NO;
-            self.scrollView.userInteractionEnabled = NO;
+        [self.dynamicAnimator removeBehavior:self.attachmentBehavior];
+        // need to scale velocity values to tame down physics on the iPad
+        CGFloat deviceVelocityScale = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 0.2f : 1.0f;
+        CGFloat deviceAngularScale = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 0.7f : 1.0f;
+        // factor to increase delay before `dismissAfterPush` is called on iPad to account for more area to cover to disappear
+        CGFloat deviceDismissDelay = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 1.8f : 1.0f;
+        CGPoint velocity = [panGestureRecognizer velocityInView:self.view];
+        CGFloat velocityAdjust = 10.0f * deviceVelocityScale;
+        if (fabs(velocity.x / velocityAdjust) > 50.0 || fabs(velocity.y / velocityAdjust) > 50.0) {
+            UIOffset offsetFromCenter = UIOffsetMake(imageLocation.x - CGRectGetMidX(self.imageView.bounds), imageLocation.y - CGRectGetMidY(self.imageView.bounds));
+            CGFloat radius = sqrtf(powf(offsetFromCenter.horizontal, 2.0f) + powf(offsetFromCenter.vertical, 2.0f));
+            CGFloat pushVelocity = sqrtf(powf(velocity.x, 2.0f) + powf(velocity.y, 2.0f));
             
-            UIGravityBehavior *exitGravity = [[UIGravityBehavior alloc] initWithItems:@[self.imageView]];
-            if (CGRectContainsPoint(closeTopThreshhold, location)) {
-                exitGravity.gravityDirection = CGVectorMake(0.0, -1.0);
+            // calculate angles needed for angular velocity formula
+            CGFloat velocityAngle = atan2f(velocity.y, velocity.x);
+            CGFloat locationAngle = atan2f(offsetFromCenter.vertical, offsetFromCenter.horizontal);
+            if (locationAngle > 0) {
+                locationAngle -= M_PI * 2;
             }
-            exitGravity.magnitude = 10.0f;
-            [self.dynamicAnimator addBehavior:exitGravity];
             
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.35f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self dismiss];
-            });
+            // angle (θ) is the angle between the push vector (V) and vector component parallel to radius, so it should always be positive
+            CGFloat angle = fabs(fabs(velocityAngle) - fabs(locationAngle));
+            // angular velocity formula: w = (abs(V) * sin(θ)) / abs(r)
+            CGFloat angularVelocity = fabs((fabs(pushVelocity) * sinf(angle)) / fabs(radius));
+            
+            // rotation direction is dependent upon which corner was pushed relative to the center of the view
+            // when velocity.y is positive, pushes to the right of center rotate clockwise, left is counterclockwise
+            CGFloat direction = (location.x < panGestureRecognizer.view.center.x) ? -1.0f : 1.0f;
+            // when y component of velocity is negative, reverse direction
+            if (velocity.y < 0) { direction *= -1; }
+            
+            // amount of angular velocity should be relative to how close to the edge of the view the force originated
+            // angular velocity is reduced the closer to the center the force is applied
+            // for angular velocity: positive = clockwise, negative = counterclockwise
+            CGFloat xRatioFromCenter = fabs(offsetFromCenter.horizontal) / (CGRectGetWidth(self.imageView.frame) / 2.0f);
+            CGFloat yRatioFromCetner = fabs(offsetFromCenter.vertical) / (CGRectGetHeight(self.imageView.frame) / 2.0f);
+            
+            // apply device scale to angular velocity
+            angularVelocity *= deviceAngularScale;
+            // adjust angular velocity based on distance from center, force applied farther towards the edges gets more spin
+            angularVelocity *= ((xRatioFromCenter + yRatioFromCetner) / 2.0f);
+            
+            self.pushBehavior.pushDirection = CGVectorMake((velocity.x / velocityAdjust) * 1.0, (velocity.y / velocityAdjust) * 1.0);
+            self.pushBehavior.active = YES;
+            [self.dynamicItemBehavior addAngularVelocity:angularVelocity * 1.0 * direction forItem:self.imageView];
+            [self.dynamicAnimator addBehavior:self.pushBehavior];
+            
+            // delay for dismissing is based on push velocity also
+            CGFloat delay = 0.5 - (pushVelocity / 10000.0f);
+            [self performSelector:@selector(dismiss) withObject:nil afterDelay:(delay * deviceDismissDelay) * 1.0];
         } else {
-            self.parentViewController.view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:1.0];
+            [self.dynamicAnimator removeAllBehaviors];
             [self resetImageSize];
-            UISnapBehavior *snapBack = [[UISnapBehavior alloc] initWithItem:self.imageView snapToPoint:self.scrollView.center];
-            [self.dynamicAnimator addBehavior:snapBack];
         }
     }
 }
 
 #pragma mark - Private method
 
+- (void)downloadImageFromURL:(NSURL *)url {
+    SDWebImageManager *manager = [SDWebImageManager sharedManager];
+    [manager downloadImageWithURL:url options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+        float fractionCompleted = (float)receivedSize/(float)expectedSize;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.progressView setProgress:fractionCompleted];
+        });
+    } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (error) {
+                [self.progressView removeFromSuperview];
+                NSLog(@"error %@", error);
+            } else {
+                self.loadedImage = image;
+                [self prepareImageViewToShow];
+                [self.progressView removeFromSuperview];
+            }
+        });
+    }];
+}
+
 - (UIImageView *)createImageView {
     UIImageView *imageView = [[UIImageView alloc] initWithImage:self.loadedImage];
     imageView.frame = self.view.bounds;
     imageView.clipsToBounds = YES;
+    imageView.userInteractionEnabled = YES;
+    imageView.layer.allowsEdgeAntialiasing = YES;
+    imageView.contentMode = UIViewContentModeScaleAspectFit;
     imageView.backgroundColor = [UIColor blackColor];
     
     //Scale to keep its aspect ration
@@ -181,27 +262,10 @@
     imageView.layer.frame = finalImageViewFrame;
     
     //Toggle UI controls
-    UITapGestureRecognizer *singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTapGestureRecognizer:)];
-    singleTapGestureRecognizer.numberOfTapsRequired = 1;
-    [imageView setUserInteractionEnabled:YES];
-    [imageView addGestureRecognizer:singleTapGestureRecognizer];
-    
-    //Recent the image on double tap
-    UITapGestureRecognizer *doubleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTapGestureRecognizer:)];
-    doubleTapGestureRecognizer.numberOfTapsRequired = 2;
-    [imageView addGestureRecognizer:doubleTapGestureRecognizer];
-    
-    UILongPressGestureRecognizer *longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGestureRecognizer:)];
-    [imageView addGestureRecognizer:longPressGestureRecognizer];
-    
-    //Ensure the single tap doesn't fire when a user attempts to double tap
-    [singleTapGestureRecognizer requireGestureRecognizerToFail:doubleTapGestureRecognizer];
-    [singleTapGestureRecognizer requireGestureRecognizerToFail:longPressGestureRecognizer];
-    
-    //Dragging to dismiss
-    UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGestureRecognizer:)];
-    panGestureRecognizer.delegate = self;
-    [imageView addGestureRecognizer:panGestureRecognizer];
+    [imageView addGestureRecognizer:self.panGestureRecognizer];
+    [imageView addGestureRecognizer:self.singleTapGestureRecognizer];
+    [imageView addGestureRecognizer:self.doubleTapGestureRecognizer];
+    [imageView addGestureRecognizer:self.longPressGestureRecognizer];
     return imageView;
 }
 
@@ -229,35 +293,10 @@
     }
     self.imageView = [self createImageView];
     [self.scrollView addSubview:self.imageView];
-    //Apply zoom
-    self.scrollView.maximumZoomScale = self.imageMaxScale;
-    self.scrollView.minimumZoomScale = self.imageMinScale;
-    self.scrollView.zoomScale = self.imageMinScale;
 }
 
 - (void)dismiss {
     [[NSNotificationCenter defaultCenter] postNotificationName:SYPhotoBrowserDismissNotification object:nil];
-}
-
-- (void)downloadImageFromURL:(NSURL *)url {
-    SDWebImageManager *manager = [SDWebImageManager sharedManager];
-    [manager downloadImageWithURL:url options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-        float fractionCompleted = (float)receivedSize/(float)expectedSize;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.progressView setProgress:fractionCompleted];
-        });
-    } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (error) {
-                [self.progressView removeFromSuperview];
-                NSLog(@"error %@", error);
-            } else {
-                self.loadedImage = image;
-                [self prepareImageViewToShow];
-                [self.progressView removeFromSuperview];
-            }
-        });
-    }];
 }
 
 #pragma mark - Public method
@@ -277,11 +316,9 @@
         _scrollView.showsVerticalScrollIndicator = NO;
         _scrollView.decelerationRate = UIScrollViewDecelerationRateFast;
         _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        _scrollView.maximumZoomScale = 6.0;
+        [_scrollView addGestureRecognizer:self.singleTapGestureRecognizer];
         [self.view addSubview:_scrollView];
-        UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismiss)];
-        tapGestureRecognizer.numberOfTapsRequired = 1;
-        tapGestureRecognizer.cancelsTouchesInView = NO;
-        [_scrollView addGestureRecognizer:tapGestureRecognizer];
     }
     return _scrollView;
 }
@@ -300,34 +337,84 @@
     return _progressView;
 }
 
+- (UIPushBehavior *)pushBehavior {
+    if (_pushBehavior == nil) {
+        _pushBehavior = [[UIPushBehavior alloc] initWithItems:@[self.imageView] mode:UIPushBehaviorModeInstantaneous];
+        _pushBehavior.angle = 0.0;
+        _pushBehavior.magnitude = 0.0;
+    }
+    return _pushBehavior;
+}
+
+- (UISnapBehavior *)snapBehavior {
+    if (_snapBehavior == nil) {
+        _snapBehavior = [[UISnapBehavior alloc] initWithItem:self.imageView snapToPoint:self.view.center];
+        _snapBehavior.damping = 1.0;
+    }
+    return _snapBehavior;
+}
+
 - (UIDynamicAnimator *)dynamicAnimator {
     if (_dynamicAnimator == nil) {
-        _dynamicAnimator = [[UIDynamicAnimator alloc] initWithReferenceView:self.scrollView];
+        _dynamicAnimator = [[UIDynamicAnimator alloc] initWithReferenceView:self.view];
     }
     return _dynamicAnimator;
 }
 
-- (CGFloat)imageMinScale {
-    CGSize boundsSize = self.scrollView.bounds.size;
-    CGSize imageSize = self.imageView.frame.size;
-    
-    // Calculate Min
-    CGFloat xScale = boundsSize.width / imageSize.width;
-    CGFloat yScale = boundsSize.height / imageSize.height;
-    CGFloat minScale = MIN(xScale, yScale);
-    return minScale;
+- (UIDynamicItemBehavior *)dynamicItemBehavior {
+    if (_dynamicItemBehavior == nil) {
+        _dynamicItemBehavior = [[UIDynamicItemBehavior alloc] initWithItems:@[self.imageView]];
+        _dynamicItemBehavior.elasticity = 0.0;
+        _dynamicItemBehavior.friction = 0.2;
+        _dynamicItemBehavior.allowsRotation = YES;
+        _dynamicItemBehavior.density = 1.0;
+        _dynamicItemBehavior.resistance = 0.0;
+    }
+    return _dynamicItemBehavior;
 }
 
-- (CGFloat)imageMaxScale {
-    // Calculate Max
-    CGFloat maxScale = 6.0;
-    if ([UIScreen instancesRespondToSelector:@selector(scale)]) {
-        maxScale = maxScale / [[UIScreen mainScreen] scale];
-        if (maxScale < self.imageMinScale) {
-            maxScale = self.imageMinScale * 2;
-        }
+- (UIPanGestureRecognizer *)panGestureRecognizer {
+    if (_panGestureRecognizer == nil) {
+        _panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGestureRecognizer:)];
+        _panGestureRecognizer.delegate = self;
     }
-    return maxScale;
+    return _panGestureRecognizer;
+}
+
+- (UITapGestureRecognizer *)singleTapGestureRecognizer {
+    if (_singleTapGestureRecognizer == nil) {
+        _singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTapGestureRecognizer:)];
+        _singleTapGestureRecognizer.numberOfTapsRequired = 1;
+        _singleTapGestureRecognizer.numberOfTouchesRequired = 1;
+        [_singleTapGestureRecognizer requireGestureRecognizerToFail:self.doubleTapGestureRecognizer];
+        [_singleTapGestureRecognizer requireGestureRecognizerToFail:self.longPressGestureRecognizer];
+    }
+    return _singleTapGestureRecognizer;
+}
+
+- (UITapGestureRecognizer *)doubleTapGestureRecognizer {
+    if (_doubleTapGestureRecognizer == nil) {
+        _doubleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTapGestureRecognizer:)];
+        _doubleTapGestureRecognizer.numberOfTapsRequired = 2;
+        _doubleTapGestureRecognizer.numberOfTouchesRequired = 1;
+    }
+    return _doubleTapGestureRecognizer;
+}
+
+- (UILongPressGestureRecognizer *)longPressGestureRecognizer {
+    if (_longPressGestureRecognizer == nil) {
+        _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGestureRecognizer:)];
+    }
+    return _longPressGestureRecognizer;
+}
+
+- (void)setEnablePanGesture:(BOOL)enablePanGesture {
+    _enablePanGesture = enablePanGesture;
+    if (enablePanGesture) {
+        [self.imageView addGestureRecognizer:self.panGestureRecognizer];
+    } else {
+        [self.imageView removeGestureRecognizer:self.panGestureRecognizer];
+    }
 }
 
 @end
