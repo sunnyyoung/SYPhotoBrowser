@@ -16,8 +16,7 @@
 @property (nonatomic, strong) UIImage *loadedImage;
 @property (nonatomic, strong) DACircularProgressView *progressView;
 
-@property (nonatomic, strong) UISnapBehavior *snapBehavior;
-@property (nonatomic, strong) UIPushBehavior *pushBehavior;
+@property (nonatomic, assign) CGPoint beginTouchPoint;
 @property (nonatomic, strong) UIDynamicAnimator *dynamicAnimator;
 @property (nonatomic, strong) UIDynamicItemBehavior *dynamicItemBehavior;
 @property (nonatomic, strong) UIAttachmentBehavior *attachmentBehavior;
@@ -101,9 +100,9 @@
     }
     // Reset ImageView Center
     CGSize contentSize = self.scrollView.contentSize;
-    CGFloat offsetX = (CGRectGetWidth(self.scrollView.frame) > contentSize.width) ? (CGRectGetWidth(self.scrollView.frame) - contentSize.width) / 2.0f : 0.0f;
-    CGFloat offsetY = (CGRectGetHeight(self.scrollView.frame) > contentSize.height) ? (CGRectGetHeight(self.scrollView.frame) - contentSize.height) / 2.0f : 0.0f;
-    self.imageView.center = CGPointMake(self.scrollView.contentSize.width / 2.0f + offsetX, self.scrollView.contentSize.height / 2.0f + offsetY);
+    CGFloat offsetX = (CGRectGetWidth(self.scrollView.frame) > contentSize.width) ? (CGRectGetWidth(self.scrollView.frame) - contentSize.width) / 2.0 : 0.0;
+    CGFloat offsetY = (CGRectGetHeight(self.scrollView.frame) > contentSize.height) ? (CGRectGetHeight(self.scrollView.frame) - contentSize.height) / 2.0 : 0.0;
+    self.imageView.center = CGPointMake(self.scrollView.contentSize.width / 2.0 + offsetX, self.scrollView.contentSize.height / 2.0 + offsetY);
 }
 
 #pragma mark - GestureRecognizer Delegate
@@ -125,50 +124,52 @@
     return shouldRecognize && !isTapGesture;
 }
 
+#pragma mark - GestureRecognizer Handler
+
 - (void)handleSingleTapGestureRecognizer:(UITapGestureRecognizer *)singleTapGestureRecognizer {
     [self dismiss];
 }
 
 - (void)handleDoubleTapGestureRecognizer:(UITapGestureRecognizer *)doubleTapGestureRecognizer {
-    if (self.scrollView.zoomScale != self.scrollView.minimumZoomScale) {
+    if (self.scrollView.zoomScale > self.scrollView.minimumZoomScale) {
         [self.scrollView setZoomScale:self.scrollView.minimumZoomScale animated:YES];
-    }
-    else {
+    } else {
         CGPoint tapPoint = [self.imageView convertPoint:[doubleTapGestureRecognizer locationInView:doubleTapGestureRecognizer.view] fromView:self.scrollView];
         CGFloat newZoomScale = self.scrollView.maximumZoomScale;
-        
-        CGFloat w = CGRectGetWidth(self.imageView.frame) / newZoomScale;
-        CGFloat h = CGRectGetHeight(self.imageView.frame) / newZoomScale;
-        
-        if (w != CGRectGetWidth(self.imageView.frame)) {
+        CGFloat width = CGRectGetWidth(self.imageView.frame) / newZoomScale;
+        CGFloat height = CGRectGetHeight(self.imageView.frame) / newZoomScale;
+        if (width != CGRectGetWidth(self.imageView.frame)) {
             self.enablePanGesture = NO;
-            CGRect zoomRect = CGRectMake(tapPoint.x - (w / 2.0f), tapPoint.y - (h / 2.0f), w, h);
+            CGRect zoomRect = CGRectMake(tapPoint.x - (width / 2.0), tapPoint.y - (height / 2.0), width, height);
             [self.scrollView zoomToRect:zoomRect animated:YES];
         }
     }
 }
 
 - (void)handleLongPressGestureRecognizer:(UILongPressGestureRecognizer *)longPressGestureRecognizer {
-    if (longPressGestureRecognizer.state == UIGestureRecognizerStateBegan) {
+    if (longPressGestureRecognizer.state == UIGestureRecognizerStateBegan && self.loadedImage) {
         [[NSNotificationCenter defaultCenter] postNotificationName:SYPhotoBrowserLongPressNotification object:self.loadedImage];
     }
 }
 
 - (void)handlePanGestureRecognizer:(UIPanGestureRecognizer *)panGestureRecognizer {
-    CGPoint location = [panGestureRecognizer locationInView:self.view];
+    CGPoint touchLocation = [panGestureRecognizer locationInView:self.view];
     CGPoint imageLocation = [panGestureRecognizer locationInView:self.imageView];
+    UIOffset centerOffset = UIOffsetMake(imageLocation.x - CGRectGetMidX(self.imageView.bounds), imageLocation.y - CGRectGetMidY(self.imageView.bounds));
     if (panGestureRecognizer.state == UIGestureRecognizerStateBegan) {
         [self.dynamicAnimator removeAllBehaviors];
-        UIOffset centerOffset = UIOffsetMake(imageLocation.x - CGRectGetMidX(self.imageView.bounds), imageLocation.y - CGRectGetMidY(self.imageView.bounds));
-        self.attachmentBehavior = [[UIAttachmentBehavior alloc] initWithItem:self.imageView offsetFromCenter:centerOffset attachedToAnchor:location];
+        self.attachmentBehavior = [[UIAttachmentBehavior alloc] initWithItem:self.imageView offsetFromCenter:centerOffset attachedToAnchor:touchLocation];
         [self.dynamicAnimator addBehavior:self.attachmentBehavior];
         [self.dynamicAnimator addBehavior:self.dynamicItemBehavior];
         CGRect imageFrame = self.imageView.frame;
         imageFrame.size.width *= self.scrollView.zoomScale;
         imageFrame.size.height *= self.scrollView.zoomScale;
         self.imageView.frame = imageFrame;
+        self.beginTouchPoint = touchLocation;
     } else if (panGestureRecognizer.state == UIGestureRecognizerStateChanged) {
-        self.attachmentBehavior.anchorPoint = location;
+        self.attachmentBehavior.anchorPoint = touchLocation;
+        CGFloat alpha = MAX(0.6, 1.0 - fabs(self.beginTouchPoint.y - touchLocation.y) / (CGRectGetHeight([UIScreen mainScreen].bounds)/2));
+        self.parentViewController.view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:alpha];
     } else if (panGestureRecognizer.state == UIGestureRecognizerStateEnded) {
         [self.dynamicAnimator removeBehavior:self.attachmentBehavior];
         // need to scale velocity values to tame down physics on the iPad
@@ -197,7 +198,7 @@
             
             // rotation direction is dependent upon which corner was pushed relative to the center of the view
             // when velocity.y is positive, pushes to the right of center rotate clockwise, left is counterclockwise
-            CGFloat direction = (location.x < panGestureRecognizer.view.center.x) ? -1.0 : 1.0;
+            CGFloat direction = (touchLocation.x < panGestureRecognizer.view.center.x) ? -1.0 : 1.0;
             // when y component of velocity is negative, reverse direction
             if (velocity.y < 0) {
                 direction *= -1;
@@ -214,17 +215,21 @@
             // adjust angular velocity based on distance from center, force applied farther towards the edges gets more spin
             angularVelocity *= ((xRatioFromCenter + yRatioFromCetner) / 2.0);
             
-            self.pushBehavior.pushDirection = CGVectorMake((velocity.x / velocityAdjust), (velocity.y / velocityAdjust));
-            self.pushBehavior.active = YES;
+            UIPushBehavior *pushBehavior = [[UIPushBehavior alloc] initWithItems:@[self.imageView] mode:UIPushBehaviorModeInstantaneous];
+            pushBehavior.pushDirection = CGVectorMake((velocity.x / velocityAdjust), (velocity.y / velocityAdjust));
+            pushBehavior.active = YES;
             [self.dynamicItemBehavior addAngularVelocity:angularVelocity * direction forItem:self.imageView];
-            [self.dynamicAnimator addBehavior:self.pushBehavior];
+            [self.dynamicAnimator addBehavior:pushBehavior];
             
             // delay for dismissing is based on push velocity also
-            CGFloat delay = 0.5 - (pushVelocity / 10000.0f);
+            CGFloat delay = 0.5 - (pushVelocity / 10000.0);
             [self performSelector:@selector(dismiss) withObject:nil afterDelay:(delay * deviceDismissDelay)];
         } else {
             [self.dynamicAnimator removeAllBehaviors];
             [self resetImageSize];
+            [UIView animateWithDuration:0.25 animations:^{
+                self.parentViewController.view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:1.0];
+            }];
         }
     }
 }
@@ -265,7 +270,7 @@
     CGFloat screenWidth = CGRectGetWidth([UIScreen mainScreen].bounds);
     CGFloat screenHeight = CGRectGetHeight([UIScreen mainScreen].bounds);
     float scaleFactor = (self.loadedImage ? self.loadedImage.size.width : screenWidth) / screenWidth;
-    CGRect finalImageViewFrame = CGRectMake(0, (screenHeight/2)-((self.loadedImage.size.height / scaleFactor)/2), screenWidth, self.loadedImage.size.height / scaleFactor);
+    CGRect finalImageViewFrame = CGRectMake(0, (screenHeight/2.0)-((self.loadedImage.size.height / scaleFactor)/2.0), screenWidth, self.loadedImage.size.height / scaleFactor);
     imageView.layer.frame = finalImageViewFrame;
     
     //Toggle UI controls
@@ -334,7 +339,7 @@
     if (_progressView == nil) {
         CGFloat screenWidth = CGRectGetWidth([UIScreen mainScreen].bounds);
         CGFloat screenHeight = CGRectGetHeight([UIScreen mainScreen].bounds);
-        _progressView = [[DACircularProgressView alloc] initWithFrame:CGRectMake((screenWidth-35.)/2., (screenHeight-35.)/2, 35.0f, 35.0f)];
+        _progressView = [[DACircularProgressView alloc] initWithFrame:CGRectMake((screenWidth-35.0)/2.0, (screenHeight-35.0)/2.0, 35.0, 35.0)];
         _progressView.progress = 0.0;
         _progressView.thicknessRatio = 0.1;
         _progressView.roundedCorners = NO;
@@ -342,23 +347,6 @@
         _progressView.progressTintColor = [UIColor colorWithWhite:1.0 alpha:1];
     }
     return _progressView;
-}
-
-- (UIPushBehavior *)pushBehavior {
-    if (_pushBehavior == nil) {
-        _pushBehavior = [[UIPushBehavior alloc] initWithItems:@[self.imageView] mode:UIPushBehaviorModeInstantaneous];
-        _pushBehavior.angle = 0.0;
-        _pushBehavior.magnitude = 0.0;
-    }
-    return _pushBehavior;
-}
-
-- (UISnapBehavior *)snapBehavior {
-    if (_snapBehavior == nil) {
-        _snapBehavior = [[UISnapBehavior alloc] initWithItem:self.imageView snapToPoint:self.view.center];
-        _snapBehavior.damping = 1.0;
-    }
-    return _snapBehavior;
 }
 
 - (UIDynamicAnimator *)dynamicAnimator {
@@ -371,10 +359,8 @@
 - (UIDynamicItemBehavior *)dynamicItemBehavior {
     if (_dynamicItemBehavior == nil) {
         _dynamicItemBehavior = [[UIDynamicItemBehavior alloc] initWithItems:@[self.imageView]];
-        _dynamicItemBehavior.elasticity = 0.0;
         _dynamicItemBehavior.friction = 0.2;
         _dynamicItemBehavior.density = 1.0;
-        _dynamicItemBehavior.resistance = 0.0;
         _dynamicItemBehavior.allowsRotation = YES;
     }
     return _dynamicItemBehavior;
