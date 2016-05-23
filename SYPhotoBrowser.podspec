@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "SYPhotoBrowser"
-  s.version      = "2.0"
+  s.version      = "2.1"
   s.summary      = "A cute and lightweight photo browser like Tweetbot3."
   s.homepage     = "https://github.com/Sunnyyoung/SYPhotoBrowser"
   s.license      = "MIT"

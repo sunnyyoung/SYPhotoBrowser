@@ -163,7 +163,7 @@ static const CGFloat SYPhotoBrowserCaptionLabelPadding = 20.0;
     if (caption.length) {
         self.captionLabel.text = caption;
         CGRect captionLabelFrame = self.captionLabel.frame;
-        CGSize captionLabelSize = [self.captionLabel sizeThatFits:CGSizeMake(CGRectGetWidth(self.view.bounds), CGFLOAT_MAX)];
+        CGSize captionLabelSize = [self.captionLabel sizeThatFits:CGSizeMake(CGRectGetWidth(self.view.bounds) - SYPhotoBrowserCaptionLabelPadding*2, CGFLOAT_MAX)];
         captionLabelFrame.size.height = captionLabelSize.height;
         captionLabelFrame.origin.y -= CGRectGetHeight(captionLabelFrame);
         self.captionLabel.frame = captionLabelFrame;

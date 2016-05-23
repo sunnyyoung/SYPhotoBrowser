@@ -157,8 +157,8 @@
     CGPoint imageLocation = [panGestureRecognizer locationInView:self.imageView];
     UIOffset centerOffset = UIOffsetMake(imageLocation.x - CGRectGetMidX(self.imageView.bounds), imageLocation.y - CGRectGetMidY(self.imageView.bounds));
     if (panGestureRecognizer.state == UIGestureRecognizerStateBegan) {
-        [self.dynamicAnimator removeAllBehaviors];
         self.attachmentBehavior = [[UIAttachmentBehavior alloc] initWithItem:self.imageView offsetFromCenter:centerOffset attachedToAnchor:touchLocation];
+        [self.dynamicAnimator removeAllBehaviors];
         [self.dynamicAnimator addBehavior:self.attachmentBehavior];
         [self.dynamicAnimator addBehavior:self.dynamicItemBehavior];
         CGRect imageFrame = self.imageView.frame;
@@ -171,7 +171,6 @@
         CGFloat alpha = MAX(0.6, 1.0 - fabs(self.beginTouchPoint.y - touchLocation.y) / (CGRectGetHeight([UIScreen mainScreen].bounds)/2));
         self.parentViewController.view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:alpha];
     } else if (panGestureRecognizer.state == UIGestureRecognizerStateEnded) {
-        [self.dynamicAnimator removeBehavior:self.attachmentBehavior];
         // need to scale velocity values to tame down physics on the iPad
         CGFloat deviceVelocityScale = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 0.2 : 1.0;
         CGFloat deviceAngularScale = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 0.7 : 1.0;
@@ -213,12 +212,13 @@
             // apply device scale to angular velocity
             angularVelocity *= deviceAngularScale;
             // adjust angular velocity based on distance from center, force applied farther towards the edges gets more spin
-            angularVelocity *= ((xRatioFromCenter + yRatioFromCetner) / 2.0);
+            angularVelocity *= (xRatioFromCenter + yRatioFromCetner);
             
             UIPushBehavior *pushBehavior = [[UIPushBehavior alloc] initWithItems:@[self.imageView] mode:UIPushBehaviorModeInstantaneous];
             pushBehavior.pushDirection = CGVectorMake((velocity.x / velocityAdjust), (velocity.y / velocityAdjust));
             pushBehavior.active = YES;
             [self.dynamicItemBehavior addAngularVelocity:angularVelocity * direction forItem:self.imageView];
+            [self.dynamicAnimator removeBehavior:self.attachmentBehavior];
             [self.dynamicAnimator addBehavior:pushBehavior];
             
             // delay for dismissing is based on push velocity also
@@ -360,7 +360,6 @@
     if (_dynamicItemBehavior == nil) {
         _dynamicItemBehavior = [[UIDynamicItemBehavior alloc] initWithItems:@[self.imageView]];
         _dynamicItemBehavior.friction = 0.2;
-        _dynamicItemBehavior.density = 1.0;
         _dynamicItemBehavior.allowsRotation = YES;
     }
     return _dynamicItemBehavior;
