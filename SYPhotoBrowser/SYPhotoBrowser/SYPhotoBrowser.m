@@ -190,10 +190,6 @@ static const CGFloat SYPhotoBrowserCaptionLabelPadding = 20.0;
 
 #pragma mark - Property method
 
-- (BOOL)prefersStatusBarHidden {
-    return self.enableStatusBarHidden;
-}
-
 - (UIStatusBarAnimation)preferredStatusBarUpdateAnimation {
     return UIStatusBarAnimationFade;
 }
@@ -240,6 +236,23 @@ static const CGFloat SYPhotoBrowserCaptionLabelPadding = 20.0;
         [self.view addSubview:_captionLabel];
     }
     return _captionLabel;
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    if(self.enableStatusBarHidden){
+        [UIApplication sharedApplication].keyWindow.windowLevel = UIWindowLevelAlert;
+    }
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    if(self.enableStatusBarHidden){
+        [UIApplication sharedApplication].keyWindow.windowLevel = UIWindowLevelNormal;
+    }
 }
 
 @end
