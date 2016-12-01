@@ -9,7 +9,7 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods.xcscheme</key>
+		<key>Pods-SYPhotoBrowser.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -22,17 +22,17 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>130FAD9C27024CE62E21CFAA27BF825B</key>
+		<key>2957C0B46350BD9F6A30FC624F232396</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>92017C2654DB7DFB627ACCE71738A3B5</key>
+		<key>77CEB2A6C8A4CB76A5079677B99EB79D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>9775596B3CA16905FC8F66DA8E2A3C67</key>
+		<key>C791F0A928C1A8FE97074DFC9ACF4E75</key>
 		<dict>
 			<key>primary</key>
 			<true/>

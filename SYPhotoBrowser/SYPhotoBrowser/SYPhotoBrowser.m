@@ -17,9 +17,12 @@ static const CGFloat SYPhotoBrowserCaptionLabelPadding = 20.0;
 
 @property (nonatomic, weak) id <SYPhotoBrowserDelegate> photoBrowserDelegate;
 
+// UI Property
 @property (nonatomic, strong) UIPageControl *systemPageControl;
 @property (nonatomic, strong) UILabel *labelPageControl;
 @property (nonatomic, strong) SYPhotoBrowserCaptionLabel *captionLabel;
+
+// Data Property
 @property (nonatomic, strong) NSMutableArray *photoViewControllerArray;
 @property (nonatomic, copy) NSArray *imageSourceArray;
 @property (nonatomic, copy) NSString *caption;

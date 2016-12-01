@@ -17,12 +17,10 @@
 		7D788C4A1CABA7F1002E94B0 /* SYPhotoBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D788C491CABA7F1002E94B0 /* SYPhotoBrowser.m */; };
 		7D788C4D1CABA841002E94B0 /* SYPhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D788C4C1CABA841002E94B0 /* SYPhotoViewController.m */; };
 		7DC653921CED501B00557DDD /* SYPhotoBrowserCaptionLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DC653911CED501B00557DDD /* SYPhotoBrowserCaptionLabel.m */; };
-		96355013C490F232941FFEC9 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7985BDDB4D70E7F10E5624D9 /* libPods.a */; };
+		9BEE1B3A3C559CDC6A4943B4 /* libPods-SYPhotoBrowser.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9ADC5B6E9D911B05F4325188 /* libPods-SYPhotoBrowser.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		436AAB1641BD8BA21D7216FF /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
-		7985BDDB4D70E7F10E5624D9 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D0814181CACF7630014A026 /* CollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectionViewCell.h; sourceTree = "<group>"; };
 		7D0814191CACF7630014A026 /* CollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CollectionViewCell.m; sourceTree = "<group>"; };
 		7D788C2C1CABA430002E94B0 /* SYPhotoBrowser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SYPhotoBrowser.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -41,7 +39,9 @@
 		7D788C4C1CABA841002E94B0 /* SYPhotoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SYPhotoViewController.m; sourceTree = "<group>"; };
 		7DC653901CED501B00557DDD /* SYPhotoBrowserCaptionLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SYPhotoBrowserCaptionLabel.h; sourceTree = "<group>"; };
 		7DC653911CED501B00557DDD /* SYPhotoBrowserCaptionLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SYPhotoBrowserCaptionLabel.m; sourceTree = "<group>"; };
-		8DA6A6D76E8C058FE3FF82B0 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		9ADC5B6E9D911B05F4325188 /* libPods-SYPhotoBrowser.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SYPhotoBrowser.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BC58E823C233F83EA48571E5 /* Pods-SYPhotoBrowser.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SYPhotoBrowser.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SYPhotoBrowser/Pods-SYPhotoBrowser.debug.xcconfig"; sourceTree = "<group>"; };
+		D4ACBECC8092EFF8ED52D88E /* Pods-SYPhotoBrowser.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SYPhotoBrowser.release.xcconfig"; path = "Pods/Target Support Files/Pods-SYPhotoBrowser/Pods-SYPhotoBrowser.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,17 +49,17 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				96355013C490F232941FFEC9 /* libPods.a in Frameworks */,
+				9BEE1B3A3C559CDC6A4943B4 /* libPods-SYPhotoBrowser.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		40B34E8A40799852649BD321 /* Frameworks */ = {
+		54396B588B37678EF21E55D5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				7985BDDB4D70E7F10E5624D9 /* libPods.a */,
+				9ADC5B6E9D911B05F4325188 /* libPods-SYPhotoBrowser.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -69,8 +69,8 @@
 			children = (
 				7D788C2E1CABA430002E94B0 /* SYPhotoBrowser */,
 				7D788C2D1CABA430002E94B0 /* Products */,
-				EAF5AA284F5F25DA5B965670 /* Pods */,
-				40B34E8A40799852649BD321 /* Frameworks */,
+				D0339DF8A9D7D418A17593DB /* Pods */,
+				54396B588B37678EF21E55D5 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -122,11 +122,11 @@
 			path = SYPhotoBrowser;
 			sourceTree = "<group>";
 		};
-		EAF5AA284F5F25DA5B965670 /* Pods */ = {
+		D0339DF8A9D7D418A17593DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				8DA6A6D76E8C058FE3FF82B0 /* Pods.debug.xcconfig */,
-				436AAB1641BD8BA21D7216FF /* Pods.release.xcconfig */,
+				BC58E823C233F83EA48571E5 /* Pods-SYPhotoBrowser.debug.xcconfig */,
+				D4ACBECC8092EFF8ED52D88E /* Pods-SYPhotoBrowser.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -138,12 +138,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7D788C431CABA430002E94B0 /* Build configuration list for PBXNativeTarget "SYPhotoBrowser" */;
 			buildPhases = (
-				39580D3671180ACE4BBE887C /* Check Pods Manifest.lock */,
+				8983BE1C02F6C2A5CDF9065B /* [CP] Check Pods Manifest.lock */,
 				7D788C281CABA430002E94B0 /* Sources */,
 				7D788C291CABA430002E94B0 /* Frameworks */,
 				7D788C2A1CABA430002E94B0 /* Resources */,
-				770432D3896A981EC696DD9D /* Embed Pods Frameworks */,
-				1889F48530D6C2FD32D0CD35 /* Copy Pods Resources */,
+				03775DCB2DB1995CA7F9156B /* [CP] Embed Pods Frameworks */,
+				154EEDDCF6A569EA0416B5F8 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -160,7 +160,7 @@
 		7D788C241CABA430002E94B0 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0730;
+				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = Sunnyyoung;
 				TargetAttributes = {
 					7D788C2B1CABA430002E94B0 = {
@@ -200,49 +200,49 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		1889F48530D6C2FD32D0CD35 /* Copy Pods Resources */ = {
+		03775DCB2DB1995CA7F9156B /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SYPhotoBrowser/Pods-SYPhotoBrowser-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		39580D3671180ACE4BBE887C /* Check Pods Manifest.lock */ = {
+		154EEDDCF6A569EA0416B5F8 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SYPhotoBrowser/Pods-SYPhotoBrowser-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8983BE1C02F6C2A5CDF9065B /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		770432D3896A981EC696DD9D /* Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -298,8 +298,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -321,7 +323,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -343,8 +345,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -360,7 +364,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -370,12 +374,13 @@
 		};
 		7D788C441CABA430002E94B0 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8DA6A6D76E8C058FE3FF82B0 /* Pods.debug.xcconfig */;
+			baseConfigurationReference = BC58E823C233F83EA48571E5 /* Pods-SYPhotoBrowser.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "Brand Assets";
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = SYPhotoBrowser/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.sunnyyoung.SYPhotoBrowser;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -384,12 +389,13 @@
 		};
 		7D788C451CABA430002E94B0 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 436AAB1641BD8BA21D7216FF /* Pods.release.xcconfig */;
+			baseConfigurationReference = D4ACBECC8092EFF8ED52D88E /* Pods-SYPhotoBrowser.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "Brand Assets";
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = SYPhotoBrowser/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.sunnyyoung.SYPhotoBrowser;
 				PRODUCT_NAME = "$(TARGET_NAME)";
