@@ -42,26 +42,9 @@ static const CGFloat SYPhotoBrowserCaptionLabelPadding = 20.0;
         self.delegate = self;
         self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         self.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-        self.enableStatusBarHidden = YES;
+        self.modalPresentationCapturesStatusBarAppearance = YES;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleDissmissNotification:) name:SYPhotoBrowserDismissNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleLongPressNotification:) name:SYPhotoBrowserLongPressNotification object:nil];
-    }
-    return self;
-}
-
-- (instancetype)initWithImageSource:(id)imageSource caption:(NSString *)caption {
-    self = [self init];
-    if (self) {
-        self.imageSourceArray = @[imageSource];
-        self.caption = caption;
-    }
-    return self;
-}
-
-- (instancetype)initWithImageSource:(id)imageSource caption:(NSString *)caption delegate:(id)delegate {
-    self = [self initWithImageSource:imageSource caption:caption];
-    if (self) {
-        self.photoBrowserDelegate = delegate;
     }
     return self;
 }
@@ -76,8 +59,10 @@ static const CGFloat SYPhotoBrowserCaptionLabelPadding = 20.0;
 }
 
 - (instancetype)initWithImageSourceArray:(NSArray *)imageSourceArray caption:(NSString *)caption delegate:(id)delegate {
-    self = [self initWithImageSourceArray:imageSourceArray caption:caption];
+    self = [self init];
     if (self) {
+        self.imageSourceArray = imageSourceArray;
+        self.caption = caption;
         self.photoBrowserDelegate = delegate;
     }
     return self;
@@ -97,17 +82,12 @@ static const CGFloat SYPhotoBrowserCaptionLabelPadding = 20.0;
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    if(self.enableStatusBarHidden){
-        [UIApplication sharedApplication].keyWindow.windowLevel = UIWindowLevelAlert;
-    }
+    [UIApplication sharedApplication].keyWindow.windowLevel = UIWindowLevelAlert;
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
+- (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    if(self.enableStatusBarHidden){
-        [UIApplication sharedApplication].keyWindow.windowLevel = UIWindowLevelNormal;
-    }
+    [UIApplication sharedApplication].keyWindow.windowLevel = UIWindowLevelNormal;
 }
 
 - (void)dealloc {
@@ -221,7 +201,8 @@ static const CGFloat SYPhotoBrowserCaptionLabelPadding = 20.0;
 
 - (UIPageControl *)systemPageControl {
     if (_systemPageControl == nil) {
-        _systemPageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.view.bounds)-SYPhotoBrowserPageControlHeight, CGRectGetWidth(self.view.bounds), SYPhotoBrowserPageControlHeight)];
+        _systemPageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0.0, CGRectGetHeight(self.view.bounds)-SYPhotoBrowserPageControlHeight, CGRectGetWidth(self.view.bounds), SYPhotoBrowserPageControlHeight)];
+        _systemPageControl.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleTopMargin;
         _systemPageControl.userInteractionEnabled = NO;
         _systemPageControl.hidesForSinglePage = YES;
         [self.view addSubview:_systemPageControl];
@@ -231,7 +212,7 @@ static const CGFloat SYPhotoBrowserCaptionLabelPadding = 20.0;
 
 - (UILabel *)labelPageControl {
     if (_labelPageControl == nil) {
-        _labelPageControl = [[UILabel alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.view.bounds)-SYPhotoBrowserPageControlHeight, CGRectGetWidth(self.view.bounds), SYPhotoBrowserPageControlHeight)];
+        _labelPageControl = [[UILabel alloc] initWithFrame:CGRectMake(0.0, CGRectGetHeight(self.view.bounds)-SYPhotoBrowserPageControlHeight, CGRectGetWidth(self.view.bounds), SYPhotoBrowserPageControlHeight)];
         _labelPageControl.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleTopMargin;
         _labelPageControl.textAlignment = NSTextAlignmentCenter;
         _labelPageControl.textColor = [UIColor whiteColor];
@@ -243,7 +224,7 @@ static const CGFloat SYPhotoBrowserCaptionLabelPadding = 20.0;
 
 - (SYPhotoBrowserCaptionLabel *)captionLabel {
     if (_captionLabel == nil) {
-        CGRect frame = CGRectMake(0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds), 0.0);
+        CGRect frame = CGRectMake(0.0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds), 0.0);
         UIEdgeInsets edgeInsets = UIEdgeInsetsMake(SYPhotoBrowserCaptionLabelPadding, SYPhotoBrowserCaptionLabelPadding, SYPhotoBrowserCaptionLabelPadding, SYPhotoBrowserCaptionLabelPadding);
         _captionLabel = [[SYPhotoBrowserCaptionLabel alloc] initWithFrame:frame edgeInsets:edgeInsets];
         _captionLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleTopMargin;
