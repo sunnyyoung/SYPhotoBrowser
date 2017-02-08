@@ -238,12 +238,12 @@
 
 - (void)downloadImageFromURL:(NSURL *)url {
     SDWebImageManager *manager = [SDWebImageManager sharedManager];
-    [manager downloadImageWithURL:url options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+    [manager loadImageWithURL:url options:kNilOptions progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
         float fractionCompleted = (float)receivedSize/(float)expectedSize;
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.progressView setProgress:fractionCompleted];
         });
-    } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+    } completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, SDImageCacheType cacheType, BOOL finished, NSURL * _Nullable imageURL) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (error) {
                 [self.progressView removeFromSuperview];

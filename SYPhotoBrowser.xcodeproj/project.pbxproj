@@ -165,6 +165,7 @@
 				TargetAttributes = {
 					7D788C2B1CABA430002E94B0 = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = V87H9P7AB7;
 					};
 				};
 			};
@@ -378,7 +379,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "Brand Assets";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = V87H9P7AB7;
 				INFOPLIST_FILE = SYPhotoBrowser/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -393,7 +394,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "Brand Assets";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = V87H9P7AB7;
 				INFOPLIST_FILE = SYPhotoBrowser/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
