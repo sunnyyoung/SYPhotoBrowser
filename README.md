@@ -19,7 +19,7 @@ A cute and lightweight photo browser like Tweetbot3.
 
 To use `SYPhotoBrowser `
 
-1. Edit your `Podfile`, add one line code `pod 'SYPhotoBrowser`
+1. Edit your `Podfile`, add one line code `pod 'SYPhotoBrowser'`
 2. Run 'pod update'
 3. `#import <SYPhotoBrowser/SYPhotoBrowser.h>`
 
