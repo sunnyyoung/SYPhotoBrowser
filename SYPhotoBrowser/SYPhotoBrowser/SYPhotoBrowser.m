@@ -146,6 +146,13 @@ static const CGFloat SYPhotoBrowserCaptionLabelPadding = 20.0;
     }
 }
 
+- (void)dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion {
+    if ([self.photoBrowserDelegate respondsToSelector:@selector(photoBrowserWillDismiss:)]) {
+        [self.photoBrowserDelegate photoBrowserWillDismiss:self];
+    }
+    [super dismissViewControllerAnimated:flag completion:completion];
+}
+
 #pragma mark - Private method
 
 - (void)loadPhotoViewControllers {
