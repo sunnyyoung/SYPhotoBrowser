@@ -57,4 +57,8 @@
     [alertView show];
 }
 
+- (void)photoBrowserDidDismiss:(SYPhotoBrowser *)photoBrowser {
+    NSLog(@"---photoBrowserDismiss");
+}
+
 @end
