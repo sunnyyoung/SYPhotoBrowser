@@ -22,6 +22,7 @@ typedef NS_ENUM(NSUInteger, SYPhotoBrowserPageControlStyle) {
 
 @optional
 - (void)photoBrowser:(SYPhotoBrowser *)photoBrowser didLongPressImage:(UIImage *)image;
+- (void)photoBrowserDidDismiss:(SYPhotoBrowser *)photoBrowser;
 
 @end
 
