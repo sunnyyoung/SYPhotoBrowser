@@ -14,7 +14,8 @@ static NSString * const SYPhotoBrowserLongPressNotification = @"SYPhotoBrowserLo
 @class SYPhotoBrowser;
 
 typedef NS_ENUM(NSUInteger, SYPhotoBrowserPageControlStyle) {
-    SYPhotoBrowserPageControlStyleSystem = 0,
+    SYPhotoBrowserPageControlStyleNone  = 0,
+    SYPhotoBrowserPageControlStyleSystem,
     SYPhotoBrowserPageControlStyleLabel
 };
 
@@ -22,6 +23,8 @@ typedef NS_ENUM(NSUInteger, SYPhotoBrowserPageControlStyle) {
 
 @optional
 - (void)photoBrowser:(SYPhotoBrowser *)photoBrowser didLongPressImage:(UIImage *)image;
+- (void)photoBrowserWillDismiss:(SYPhotoBrowser *)photoBrowser;
+- (void)photoBrowserDidDismiss:(SYPhotoBrowser *)photoBrowser;
 
 @end
 

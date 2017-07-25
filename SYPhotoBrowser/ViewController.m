@@ -46,7 +46,9 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     SYPhotoBrowser *photoBrowser = [[SYPhotoBrowser alloc] initWithImageSourceArray:self.urlArray caption:@"This is caption label" delegate:self];
     photoBrowser.initialPageIndex = indexPath.row;
-    photoBrowser.pageControlStyle = SYPhotoBrowserPageControlStyleSystem;
+//    photoBrowser.pageControlStyle = SYPhotoBrowserPageControlStyleSystem;
+//    photoBrowser.pageControlStyle = SYPhotoBrowserPageControlStyleLabel;
+//    photoBrowser.pageControlStyle = SYPhotoBrowserPageControlStyleNone;
     [self presentViewController:photoBrowser animated:YES completion:nil];
 }
 
@@ -55,6 +57,14 @@
 - (void)photoBrowser:(SYPhotoBrowser *)photoBrowser didLongPressImage:(UIImage *)image {
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"LongPress" message:@"Do somethings" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
     [alertView show];
+}
+
+- (void)photoBrowserWillDismiss:(SYPhotoBrowser *)photoBrowser {
+    NSLog(@"---photoBrowserDismiss");
+}
+
+- (void)photoBrowserDidDismiss:(SYPhotoBrowser *)photoBrowser {
+    NSLog(@"---photoBrowserDidDismiss");
 }
 
 @end
