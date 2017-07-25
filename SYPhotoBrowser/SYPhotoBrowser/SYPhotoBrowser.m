@@ -38,6 +38,7 @@ static const CGFloat SYPhotoBrowserCaptionLabelPadding = 20.0;
                     navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal
                                   options:@{UIPageViewControllerOptionInterPageSpacingKey: @(10)}];
     if (self) {
+        self.pageControlStyle = SYPhotoBrowserPageControlStyleSystem;
         self.dataSource = self;
         self.delegate = self;
         self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
@@ -150,7 +151,13 @@ static const CGFloat SYPhotoBrowserCaptionLabelPadding = 20.0;
     if ([self.photoBrowserDelegate respondsToSelector:@selector(photoBrowserWillDismiss:)]) {
         [self.photoBrowserDelegate photoBrowserWillDismiss:self];
     }
-    [super dismissViewControllerAnimated:flag completion:completion];
+    __weak typeof(self) weakSelf = self;
+    [super dismissViewControllerAnimated:flag completion:^{
+        completion ? completion() : nil;
+        if ([weakSelf.photoBrowserDelegate respondsToSelector:@selector(photoBrowserDidDismiss:)]) {
+            [weakSelf.photoBrowserDelegate photoBrowserDidDismiss:weakSelf];
+        }
+    }];
 }
 
 #pragma mark - Private method
@@ -172,25 +179,44 @@ static const CGFloat SYPhotoBrowserCaptionLabelPadding = 20.0;
         captionLabelFrame.size.height = captionLabelSize.height;
         captionLabelFrame.origin.y -= CGRectGetHeight(captionLabelFrame);
         self.captionLabel.frame = captionLabelFrame;
-        if (self.pageControlStyle == SYPhotoBrowserPageControlStyleSystem) {
-            CGRect pageControlFrame = self.systemPageControl.frame;
-            pageControlFrame.origin.y -= CGRectGetHeight(captionLabelFrame);
-            self.systemPageControl.frame = pageControlFrame;
-        } else {
-            CGRect pageControlFrame = self.labelPageControl.frame;
-            pageControlFrame.origin.y -= CGRectGetHeight(captionLabelFrame);
-            self.labelPageControl.frame = pageControlFrame;
+        switch (self.pageControlStyle) {
+            case SYPhotoBrowserPageControlStyleNone: {
+                self.systemPageControl.frame = CGRectZero;
+                self.labelPageControl.frame = CGRectZero;
+                break;
+            }
+            case SYPhotoBrowserPageControlStyleSystem: {
+                CGRect pageControlFrame = self.systemPageControl.frame;
+                pageControlFrame.origin.y -= CGRectGetHeight(captionLabelFrame);
+                self.systemPageControl.frame = pageControlFrame;
+                break;
+            }
+            case SYPhotoBrowserPageControlStyleLabel: {
+                CGRect pageControlFrame = self.labelPageControl.frame;
+                pageControlFrame.origin.y -= CGRectGetHeight(captionLabelFrame);
+                self.labelPageControl.frame = pageControlFrame;
+                break;
+            }
         }
     }
 }
 
 - (void)updatePageControlWithPageIndex:(NSUInteger)pageIndex {
-    if (self.pageControlStyle == SYPhotoBrowserPageControlStyleSystem) {
-        self.systemPageControl.numberOfPages = self.imageSourceArray.count;
-        self.systemPageControl.currentPage = pageIndex;
-    } else {
-        self.labelPageControl.text = [NSString stringWithFormat:@"%@/%@", @(pageIndex+1), @(self.imageSourceArray.count)];
+    switch (self.pageControlStyle) {
+        case SYPhotoBrowserPageControlStyleNone: {
+            break;
+        }
+        case SYPhotoBrowserPageControlStyleSystem: {
+            self.systemPageControl.numberOfPages = self.imageSourceArray.count;
+            self.systemPageControl.currentPage = pageIndex;
+            break;
+        }
+        case SYPhotoBrowserPageControlStyleLabel: {
+            self.labelPageControl.text = [NSString stringWithFormat:@"%@/%@", @(pageIndex+1), @(self.imageSourceArray.count)];
+            break;
+        }
     }
+    
 }
 
 #pragma mark - Property method
